@@ -1,0 +1,50 @@
+name: Upload Release Asset
+
+on:
+  push:
+    tags:
+    - 'ubuntu_focal_5.*'
+
+jobs:
+  Kernel_Module:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: kvm-introvirt
+      - name: Setup
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bc devscripts quilt git flex bison \
+            libssl-dev libelf-dev debhelper
+        shell: bash
+      - name: Validate Kernel Module Build
+        run: |
+          cd kvm-introvirt
+          ./configure $(echo ${{ github.ref_name }} | sed -e 's/_5/\/Ubuntu-5/g' -e 's/_/\//g')
+          source ./.build_vars
+          sudo apt-get install -y linux-headers-${KERNEL_VERSION}${KERNEL_FLAVOR} \
+            linux-modules-${KERNEL_VERSION}${KERNEL_FLAVOR}
+          dpkg-buildpackage -us -uc -j
+          zip --verbose --junk-paths kvm-introvirt-ubuntu-focal-ga.zip ../*.deb
+          ls -la kvm-introvirt-ubuntu-focal-ga.zip
+        shell: bash
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./kvm-introvirt/kvm-introvirt-ubuntu-focal-ga.zip
+          asset_name: kvm-introvirt-ubuntu-focal-ga.zip
+          asset_content_type: application/zip
