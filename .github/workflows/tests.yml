@@ -1,0 +1,57 @@
+name: Build and test
+
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron: '0 3 * * 5'  # Every Friday at 3am
+  workflow_dispatch:
+
+# Minimum permissions for security
+permissions:
+  contents: read
+
+jobs:
+  qemu:
+    name: Run QEMU tests
+    runs-on: ${{ matrix.box }}
+    strategy:
+      fail-fast: false
+      matrix:
+        box:
+          - ubuntu-20.04
+          - ubuntu-22.04
+    steps:
+      - name: Install dependencies
+        run: |-
+          set -x
+          for FILE in /etc/apt/sources.list /etc/apt/sources.list.d/*; do
+            if [[ -e "${FILE}" ]]; then
+              sudo sed -i 's/# deb-src /deb-src /'  "${FILE}"
+            fi
+          done
+
+          sudo apt-get update
+          sudo apt-get install -y qemu-kvm    libvirt-daemon-system libvirt-clients bridge-utils virt-manager
+
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Checkout Git branch
+        uses: actions/checkout@v4
+
+      - name: Check for KVM
+        run: |-
+          if [[ -e /dev/kvm ]]; then
+            echo "This GitHub Action runner has KVM."
+          else
+            echo "Error: This GitHub Action runner does NOT have KVM."
+            exit 1
+          fi
+
+      - name: Build on ${{ matrix.box }}
+        run: |-
+          set -x
+          echo Running build on ${{ matrix.box }}
+          # TODO
