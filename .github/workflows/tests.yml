@@ -6,6 +6,12 @@ on:
   schedule:
     - cron: '0 3 * * 5'  # Every Friday at 3am
   workflow_dispatch:
+    inputs:
+        debug_enabled:
+          type: boolean
+          description: 'Run the build with tmate debugging enabled'
+          required: false
+          default: false
 
 # Minimum permissions for security
 permissions:
@@ -61,10 +67,9 @@ jobs:
           df -h
           mount
 
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
-        with:
-          wait-timeout-minutes: 5
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
 
   macos:
     name: Test on macOS
@@ -80,7 +85,6 @@ jobs:
       - name: Checkout Git branch
         uses: actions/checkout@v4
 
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
-        with:
-          wait-timeout-minutes: 5
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        # if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
