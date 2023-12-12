@@ -60,3 +60,11 @@ jobs:
           sudo lshw -short -C disk
           df -h
           mount
+
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+        # if: ${{ failure() }}
+        with:
+          ## If no one connects after 5 minutes, shut down server.
+          wait-timeout-minutes: 5
+          limit-access-to-actor: true
