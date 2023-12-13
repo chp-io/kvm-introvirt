@@ -82,6 +82,11 @@ jobs:
           - macos-12
           - macos-13
     steps:
+      - name: Install dependencies
+        run: |-
+          set -x
+          brew install virtualbox vagrant
+
       - name: Checkout Git branch
         uses: actions/checkout@v4
 
