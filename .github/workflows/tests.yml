@@ -92,9 +92,16 @@ jobs:
         run: |-
           set -x
           brew install virtualbox vagrant
-      - name: Start Vagrant
-        run: |-
-          set -x
-          cd ci/ivhost
-          vagrant up
-          vagrant status
+      # - name: Start Vagrant
+      #   run: |-
+      #     set -x
+      #     cd ci/ivhost
+      #     vagrant up
+      #     vagrant status
+      - uses: leleliu008/github-actions-vagrant@v1
+        with:
+          mem: 2048
+          box: generic/ubuntu2004
+          run: |-
+            uname -a
+            cat /etc/lsb-release
