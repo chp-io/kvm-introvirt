@@ -18,58 +18,58 @@ permissions:
   contents: read
 
 jobs:
-  qemu:
-    name: Build and Run QEMU Tests
-    runs-on: ${{ matrix.box }}
-    strategy:
-      fail-fast: false
-      matrix:
-        box:
-          - ubuntu-20.04
-          - ubuntu-22.04
-    steps:
-      - name: Install dependencies
-        run: |-
-          set -x
-          for FILE in /etc/apt/sources.list /etc/apt/sources.list.d/*; do
-            if [[ -e "${FILE}" ]]; then
-              sudo sed -i 's/# deb-src /deb-src /'  "${FILE}"
-            fi
-          done
+  # qemu:
+  #   name: Build and Run QEMU Tests
+  #   runs-on: ${{ matrix.box }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       box:
+  #         - ubuntu-20.04
+  #         - ubuntu-22.04
+  #   steps:
+  #     - name: Install dependencies
+  #       run: |-
+  #         set -x
+  #         for FILE in /etc/apt/sources.list /etc/apt/sources.list.d/*; do
+  #           if [[ -e "${FILE}" ]]; then
+  #             sudo sed -i 's/# deb-src /deb-src /'  "${FILE}"
+  #           fi
+  #         done
 
-          sudo apt-get update
-          sudo apt-get install -y qemu-kvm
+  #         sudo apt-get update
+  #         sudo apt-get install -y qemu-kvm
 
-      - name: Check for KVM
-        run: |-
-          if [[ -e /dev/kvm ]]; then
-            echo "This GitHub Action runner has KVM."
-          else
-            echo "Error: This GitHub Action runner does NOT have KVM."
-            exit 1
-          fi
+  #     - name: Check for KVM
+  #       run: |-
+  #         if [[ -e /dev/kvm ]]; then
+  #           echo "This GitHub Action runner has KVM."
+  #         else
+  #           echo "Error: This GitHub Action runner does NOT have KVM."
+  #           exit 1
+  #         fi
           
-      - name: Checkout Git branch
-        uses: actions/checkout@v4
+  #     - name: Checkout Git branch
+  #       uses: actions/checkout@v4
 
-      - name: Build on ${{ matrix.box }}
-        run: |-
-          set -x
-          echo Running build on ${{ matrix.box }}
-          # TODO
+  #     - name: Build on ${{ matrix.box }}
+  #       run: |-
+  #         set -x
+  #         echo Running build on ${{ matrix.box }}
+  #         # TODO
 
-      - name: Pint resources
-        run: |-
-          set -eux
-          sudo lshw -short -C memory
-          sudo lshw -short -C cpu
-          sudo lshw -short -C disk
-          df -h
-          mount
+  #     - name: Pint resources
+  #       run: |-
+  #         set -eux
+  #         sudo lshw -short -C memory
+  #         sudo lshw -short -C cpu
+  #         sudo lshw -short -C disk
+  #         df -h
+  #         mount
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        # if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+  #     - name: Setup tmate session
+  #       uses: mxschmitt/action-tmate@v3
+  #       # if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
 
   macos:
     name: Test on macOS
