@@ -92,9 +92,9 @@ jobs:
         run: |-
           set -x
           brew install virtualbox vagrant
-      # - name: Start Vagrant
-      #   run: |-
-      #     set -x
-      #     cd ci/ivhost
-      #     vagrant up
-      #     vagrant status
+      - name: Start Vagrant
+        run: |-
+          set -x
+          cd ci/ivhost
+          vagrant up
+          vagrant status
