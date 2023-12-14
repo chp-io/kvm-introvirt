@@ -82,21 +82,19 @@ jobs:
           # - macos-12
           - macos-13
     steps:
+      - name: Checkout Git branch
+        uses: actions/checkout@v4
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          detached: true
       - name: Install dependencies
         run: |-
           set -x
           brew install virtualbox vagrant
-
-      - name: Checkout Git branch
-        uses: actions/checkout@v4
-
       - name: Start Vagrant
         run: |-
           set -x
           cd ci/ivhost
           vagrant up
           vagrant status
-
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        # if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
