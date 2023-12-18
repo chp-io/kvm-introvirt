@@ -84,7 +84,6 @@ jobs:
       - uses: chp-io/github-actions-vagrant@v1
         with:
           mem: 2048
-          box: generic/ubuntu2004
+          box: generic/alpine315
           run: |-
             uname -a
-            cat /etc/lsb-release
