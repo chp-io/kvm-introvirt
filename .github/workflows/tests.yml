@@ -81,16 +81,6 @@ jobs:
         uses: mxschmitt/action-tmate@v3
         with:
           detached: true
-      - name: Install dependencies
-        run: |-
-          set -x
-          brew install virtualbox vagrant
-      # - name: Start Vagrant
-      #   run: |-
-      #     set -x
-      #     cd ci/ivhost
-      #     vagrant up
-      #     vagrant status
       - uses: chp-io/github-actions-vagrant@v1
         with:
           mem: 2048
